@@ -32,7 +32,7 @@ Please follow best practices and common sense, the list that follows shall never
     - be preapred to change your code accordingly
 
 
-Reading up on [secure coding](https://www.securecoding.cert.org/confluence/display/seccode/CERT+Coding+Standards) never hurts.
+Reading up on [secure coding](https://www.securecoding.cert.org/confluence/display/seccode/SEI+CERT+Coding+Standards) never hurts.
 
 
 # Issues and support
