@@ -4,7 +4,7 @@ We appreciate pull requests! Before firing off your [first one](https://help.git
 
 ## Legal
 
-Contributors must conform to [Certificate of Origin v1.1](http://ltsi.linuxfoundation.org/developers/signed-process) and use the associated process (add a Signed-off-by tag to your commits), similar to what exists in [Linux kernel development](https://www.kernel.org/doc/Documentation/SubmittingPatches).
+Contributors must conform to [Certificate of Origin v1.1](https://ltsi.linuxfoundation.org/software/signed-off-process/) and use the associated process (add a Signed-off-by tag to your commits), similar to what exists in [Linux kernel development](https://www.kernel.org/doc/Documentation/process/submitting-patches.rst).
 
 Please do:
 
