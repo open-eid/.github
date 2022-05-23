@@ -29,7 +29,7 @@ Please follow best practices and common sense, the list that follows shall never
   - following up
     - be prepared to participate in the code review
       - good tips: https://github.com/thoughtbot/guides/tree/master/code-review
-    - be preapred to change your code accordingly
+    - be prepared to change your code accordingly
 
 
 Reading up on [secure coding](https://www.securecoding.cert.org/confluence/display/seccode/SEI+CERT+Coding+Standards) never hurts.
