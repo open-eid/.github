@@ -36,7 +36,6 @@ Reading up on [secure coding](https://www.securecoding.cert.org/confluence/displ
 
 
 # Issues and support
+Official builds are provided through official distribution point [id.ee](https://www.id.ee/en/article/install-id-software/). If you want support, you need to be using official builds. Contact our support via www.id.ee for assistance.
 
-Official builds are provided through the official distribution point https://installer.id.ee. If you want support, you have to be using official builds.
-
-Source code is provided on "as is" terms with no warranty (see LICENSE for more information). Do not file Github issues with generic support requests.
+Source code is provided on "as is" terms with no warranty (see license for more information). Do not file Github issues with generic support requests.
