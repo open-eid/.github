@@ -20,3 +20,8 @@ Open eID organization has a number of repositories, some important ones include:
 * [digidoc4j](https://github.com/open-eid/digidoc4j): Java software library for digitally signing documents and creating digital signature containers of signed documents.
 * [SiGa](https://github.com/open-eid/SiGa): Signature Gateway is a web service for creating, signing and validating digitally signed documents.
 * [SiVa](https://github.com/open-eid/SiVa): Signature Verification Service is a web service for validating digitally signed documents.
+
+## Support
+Official builds are provided through official distribution point [id.ee](https://www.id.ee/en/article/install-id-software/). If you want support, you need to be using official builds. Contact our support via www.id.ee for assistance.
+
+Source code is provided on "as is" terms with no warranty (see license for more information). Do not file Github issues with generic support requests.
