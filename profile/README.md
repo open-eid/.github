@@ -14,7 +14,7 @@ You can find more information on how to contribute from our [contributing guidel
 Open eID organization has a number of repositories, some important ones include:
 * [DigiDoc4 Client](https://github.com/open-eid/DigiDoc4-Client): desktop application for handling digitally signed documents, encryption/decryption and managing ID-card’s PIN/PUK codes.
 * [MOPP-iOS](https://github.com/open-eid/MOPP-iOS): iOS application for handling digitally signed documents, encryption/decryption and managing ID-card’s PIN/PUK codes.
-* [MOPP-Android](https://github.com/open-eid/MOPP-Android): Android application for handling digitally signed documents, encryption/decryption and managing ID-card’s PIN/PUK codes.
+* [RIA-DigiDoc-Android](https://github.com/open-eid/RIA-DigiDoc-Android): Android application for handling digitally signed documents, encryption/decryption and managing ID-card’s PIN/PUK codes.
 * [libdigidocpp](https://github.com/open-eid/libdigidocpp): C++ software library for creating, signing and verification of digitally signed documents.
 * [cdoc4j](https://github.com/open-eid/cdoc4j): Java software library for working with CDOC documents.
 * [digidoc4j](https://github.com/open-eid/digidoc4j): Java software library for digitally signing documents and creating digital signature containers of signed documents.
