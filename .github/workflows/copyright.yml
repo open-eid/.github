@@ -1,0 +1,63 @@
+# SPDX-FileCopyrightText: Estonian Information System Authority
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+name: Copyright headers
+on:
+  workflow_call:
+    inputs:
+      pattern:
+        description: Extended regular expression that a valid header must match
+        type: string
+        # Deliberately also accepts third party notices, e.g. vendored headers carrying
+        # someone else's copyright. The check is whether a file has a notice at all,
+        # not whether the notice names us.
+        default: SPDX-FileCopyrightText|Copyright|free software
+      extensions:
+        description: Space separated list of file extensions to check
+        type: string
+        default: c cpp cxx h hpp m mm swift cs java kt kts py sh ps1 applescript ui xml manifest yml yaml svg css rc wxs wxl desktop entitlements strings qrc def fbs i gradle cmake csproj
+      filenames:
+        description: Space separated list of file names to check, for files without a usable extension
+        type: string
+        default: CMakeLists.txt rules
+      exclude:
+        description: Extended regular expression of paths to skip
+        type: string
+        default: ''
+permissions:
+  contents: read
+jobs:
+  copyright:
+    name: Check copyright headers
+    runs-on: ubuntu-slim
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+    - name: Check
+      env:
+        PATTERN: ${{ inputs.pattern }}
+        EXTENSIONS: ${{ inputs.extensions }}
+        FILENAMES: ${{ inputs.filenames }}
+        EXCLUDE: ${{ inputs.exclude }}
+      run: |
+        extre="\.($(echo "$EXTENSIONS" | tr ' ' '|'))$"
+        # Dots are escaped so that e.g. CMakeLists.txt does not also match CMakeListsXtxt
+        namere="^($(echo "$FILENAMES" | sed 's/\./\\./g' | tr ' ' '|'))$"
+        fail=0
+        checked=0
+        while IFS= read -r file; do
+          # Skips submodule links and directories
+          [ -f "$file" ] || continue
+          if ! [[ "$file" =~ $extre ]]; then
+            { [ -n "$FILENAMES" ] && [[ "$(basename "$file")" =~ $namere ]]; } || continue
+          fi
+          if [ -n "$EXCLUDE" ] && [[ "$file" =~ $EXCLUDE ]]; then continue; fi
+          checked=$((checked + 1))
+          if ! head -n 20 "$file" | grep -E "$PATTERN" >/dev/null; then
+            # The file is repeated in the message, the log only shows the message text
+            echo "::error file=$file,line=1::$file has no copyright header matching '$PATTERN'"
+            fail=1
+          fi
+        done < <(git ls-files)
+        echo "Checked $checked file(s)"
+        exit $fail
