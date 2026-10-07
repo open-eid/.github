@@ -1,0 +1,94 @@
+# SPDX-FileCopyrightText: Estonian Information System Authority
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+# Common repository checks. Callers should include the edited pull request type so that fixing
+# the description re-runs the sign-off check:
+#   on:
+#     push:
+#     pull_request:
+#       types: [opened, synchronize, reopened, edited]
+name: Checks
+on:
+  workflow_call:
+    inputs:
+      pattern:
+        description: Extended regular expression that a valid copyright header must match
+        type: string
+        # Deliberately also accepts third party notices, e.g. vendored headers carrying
+        # someone else's copyright. The check is whether a file has a notice at all,
+        # not whether the notice names us.
+        default: SPDX-FileCopyrightText|Copyright|free software
+      extensions:
+        description: Space separated list of file extensions to check for copyright headers
+        type: string
+        default: c cpp cxx h hpp m mm swift cs java kt kts php js mjs cjs ts tsx py sh ps1 applescript ui xml manifest yml yaml svg css qss html rc wxs wxl desktop zsh preinst postinst prerm postrm entitlements strings qrc def fbs i gradle cmake csproj
+      filenames:
+        description: Space separated list of file names to check for copyright headers, for files without a usable extension
+        type: string
+        default: CMakeLists.txt rules
+      exclude:
+        description: Extended regular expression of paths to skip in the copyright header check
+        type: string
+        default: ''
+permissions:
+  contents: read
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-slim
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        # Sign-off check needs the pull request commits
+        fetch-depth: 0
+    - name: Check copyright headers
+      # Editing the pull request description does not change any files
+      if: github.event.action != 'edited'
+      env:
+        PATTERN: ${{ inputs.pattern }}
+        EXTENSIONS: ${{ inputs.extensions }}
+        FILENAMES: ${{ inputs.filenames }}
+        EXCLUDE: ${{ inputs.exclude }}
+      run: |
+        extre="\.($(echo "$EXTENSIONS" | tr ' ' '|'))$"
+        # Dots are escaped so that e.g. CMakeLists.txt does not also match CMakeListsXtxt
+        namere="^($(echo "$FILENAMES" | sed 's/\./\\./g' | tr ' ' '|'))$"
+        fail=0
+        checked=0
+        while IFS= read -r file; do
+          # Skips submodule links and directories
+          [ -f "$file" ] || continue
+          if ! [[ "$file" =~ $extre ]]; then
+            { [ -n "$FILENAMES" ] && [[ "$(basename "$file")" =~ $namere ]]; } || continue
+          fi
+          if [ -n "$EXCLUDE" ] && [[ "$file" =~ $EXCLUDE ]]; then continue; fi
+          checked=$((checked + 1))
+          if ! head -n 20 "$file" | grep -E "$PATTERN" >/dev/null; then
+            # The file is repeated in the message, the log only shows the message text
+            echo "::error file=$file,line=1::$file has no copyright header matching '$PATTERN'"
+            fail=1
+          fi
+        done < <(git ls-files)
+        echo "Checked $checked file(s)"
+        exit $fail
+    - name: Check sign-off
+      # Runs also when the copyright check fails. Push events have no pull request,
+      # and bots such as dependabot do not sign off the description
+      if: ${{ !cancelled() && github.event.pull_request && github.event.pull_request.user.type != 'Bot' }}
+      env:
+        BASE: ${{ github.event.pull_request.base.sha }}
+        HEAD: ${{ github.event.pull_request.head.sha }}
+        BODY: ${{ github.event.pull_request.body }}
+      run: |
+        fail=0
+        missing=$(git log --no-merges --invert-grep --grep='^Signed-off-by: ' --format='%h %s' "$BASE..$HEAD")
+        if [ -n "$missing" ]; then
+          echo "::error::Commits without Signed-off-by, fix with 'git rebase --signoff $BASE':%0A$missing"
+          fail=1
+        fi
+        if ! grep -q '^Signed-off-by: ' <<<"$BODY"; then
+          echo "::error::Pull request description has no Signed-off-by line"
+          fail=1
+        fi
+        exit $fail
