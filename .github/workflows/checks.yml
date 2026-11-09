@@ -56,20 +56,20 @@ jobs:
         namere="^($(echo "$FILENAMES" | sed 's/\./\\./g' | tr ' ' '|'))$"
         fail=0
         checked=0
-        while IFS= read -r file; do
+        while IFS= read -r -d '' file; do
           # Skips submodule links and directories
           [ -f "$file" ] || continue
           if ! [[ "$file" =~ $extre ]]; then
-            { [ -n "$FILENAMES" ] && [[ "$(basename "$file")" =~ $namere ]]; } || continue
+            { [ -n "$FILENAMES" ] && [[ "$(basename -- "$file")" =~ $namere ]]; } || continue
           fi
           if [ -n "$EXCLUDE" ] && [[ "$file" =~ $EXCLUDE ]]; then continue; fi
           checked=$((checked + 1))
-          if ! head -n 20 "$file" | grep -E "$PATTERN" >/dev/null; then
+          if ! head -n 20 -- "$file" | grep -E "$PATTERN" >/dev/null; then
             # The file is repeated in the message, the log only shows the message text
             echo "::error file=$file,line=1::$file has no copyright header matching '$PATTERN'"
             fail=1
           fi
-        done < <(git ls-files)
+        done < <(git ls-files -z)
         echo "Checked $checked file(s)"
         exit $fail
     - name: Check sign-off
